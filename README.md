@@ -27,7 +27,7 @@ Dengan menggabungkan atau membandingkan kedua pendekatan ini, diharapkan dapat d
 
 ## Solution Approach
 
-Kami akan menggunakan dua pendekatan sistem rekomendasi yang berbeda untuk mengatasi masalah ini:
+Saya akan menggunakan dua pendekatan sistem rekomendasi yang berbeda untuk mengatasi masalah ini:
 
 ### 1. Content-Based Filtering (CBF)
 
@@ -78,7 +78,7 @@ Langkah-langkah Data Preparation:
 2.  **Penanganan Transaksi Tidak Valid**:
     * Baris dengan `InvoiceNo` yang mengandung 'C' (transaksi dibatalkan) dihapus.
     * Baris dengan `Quantity <= 0` dan `UnitPrice <= 0` juga dihapus.
-    * **Alasan**: Transaksi yang dibatalkan atau memiliki kuantitas/harga nol/negatif tidak merepresentasikan pembelian yang valid dan dapat bias hasil rekomendasi. Kami hanya ingin menganalisis pembelian yang sebenarnya.
+    * **Alasan**: Transaksi yang dibatalkan atau memiliki kuantitas/harga nol/negatif tidak merepresentasikan pembelian yang valid dan dapat bias hasil rekomendasi. Saya hanya ingin menganalisis pembelian yang sebenarnya.
 3.  **Pembuatan Fitur `TotalPrice`**:
     * Kolom baru `TotalPrice` dibuat dengan mengalikan `Quantity` dan `UnitPrice`.
     * **Alasan**: `TotalPrice` memberikan gambaran total nilai interaksi pelanggan dengan suatu produk, yang dapat menjadi "rating" yang lebih informatif untuk model Collaborative Filtering dibandingkan hanya `Quantity` saja.
@@ -103,7 +103,7 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 ### 4.1 Content-Based Filtering
 
 * **Prinsip Kerja**: Model ini merekomendasikan item berdasarkan kemiripan atribut antar item. Jika seorang pengguna menyukai suatu produk, maka model akan merekomendasikan produk lain yang memiliki karakteristik serupa.
-* **Algoritma**: Kami menggunakan kombinasi TF-IDF untuk representasi teks dan Cosine Similarity untuk mengukur kemiripan.
+* **Algoritma**: Saya menggunakan kombinasi TF-IDF untuk representasi teks dan Cosine Similarity untuk mengukur kemiripan.
     * **TF-IDF (TfidfVectorizer)**: Mengubah deskripsi produk menjadi vektor numerik yang menangkap pentingnya kata-kata dalam setiap deskripsi relatif terhadap seluruh korpus produk.
     * **Cosine Similarity**: Mengukur sudut kosinus antara dua vektor TF-IDF. Nilai yang mendekati 1 menunjukkan kemiripan tinggi, sedangkan nilai yang mendekati 0 menunjukkan tidak ada kemiripan.
         $$ \text{similarity}(\mathbf{A}, \mathbf{B}) = \cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{||\mathbf{A}|| \cdot ||\mathbf{B}||} $$
@@ -129,7 +129,7 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 ### 4.2 Collaborative Filtering
 
 * **Prinsip Kerja**: Model Collaborative Filtering merekomendasikan item berdasarkan preferensi pengguna lain yang memiliki selera serupa (user-based) atau item yang disukai oleh pengguna yang sama (item-based). Dalam proyek ini, kita menggunakan pendekatan yang mendasari matriks faktorisasi.
-* **Algoritma**: Kami menggunakan Singular Value Decomposition (SVD), sebuah algoritma faktorisasi matriks yang populer di sistem rekomendasi. SVD bekerja dengan mendekomposisi matriks interaksi pengguna-item menjadi tiga matriks yang lebih kecil, yang merepresentasikan fitur laten pengguna dan item. Dengan memfaktorisasi matriks, SVD dapat memprediksi rating (atau interaksi, dalam kasus ini adalah jumlah Quantity pembelian) yang belum diketahui antara pengguna dan item.
+* **Algoritma**: Saya menggunakan Singular Value Decomposition (SVD), sebuah algoritma faktorisasi matriks yang populer di sistem rekomendasi. SVD bekerja dengan mendekomposisi matriks interaksi pengguna-item menjadi tiga matriks yang lebih kecil, yang merepresentasikan fitur laten pengguna dan item. Dengan memfaktorisasi matriks, SVD dapat memprediksi rating (atau interaksi, dalam kasus ini adalah jumlah Quantity pembelian) yang belum diketahui antara pengguna dan item.
 * **Implementasi**: Model SVD dilatih menggunakan library Surprise pada data interaksi pengguna-produk (`interaction_df`). Data ini sebelumnya telah dibagi menjadi trainset dan testset untuk melatih dan mengevaluasi model secara terpisah. Reader dikonfigurasi untuk memahami skala Quantity yang merupakan interaksi. Setelah model dilatih, prediksi interaksi dilakukan pada testset.
 * **Contoh Top-5 Rekomendasi (Collaborative) untuk CustomerID '17850.0'**:
     ```
@@ -153,7 +153,7 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 
 ## Evaluation
 
-Pada bagian ini, kami mengevaluasi performa model Collaborative Filtering (SVD) menggunakan metrik RMSE, Precision@K, Recall@K, dan F1-score@K.
+Pada bagian ini, Saya mengevaluasi performa model Collaborative Filtering (SVD) menggunakan metrik RMSE, Precision@K, Recall@K, dan F1-score@K.
 
 ### RMSE (Root Mean Squared Error)
 
