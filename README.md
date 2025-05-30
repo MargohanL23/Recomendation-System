@@ -106,7 +106,7 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 * **Algoritma**: Saya menggunakan kombinasi TF-IDF untuk representasi teks dan Cosine Similarity untuk mengukur kemiripan.
     * **TF-IDF (TfidfVectorizer)**: Mengubah deskripsi produk menjadi vektor numerik yang menangkap pentingnya kata-kata dalam setiap deskripsi relatif terhadap seluruh korpus produk.
     * **Cosine Similarity**: Mengukur sudut kosinus antara dua vektor TF-IDF. Nilai yang mendekati 1 menunjukkan kemiripan tinggi, sedangkan nilai yang mendekati 0 menunjukkan tidak ada kemiripan.
-        $$ \text{similarity}(\mathbf{A}, \mathbf{B}) = \cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{||\mathbf{A}|| \cdot ||\mathbf{B}||} $$
+        $$\text{similarity}(\mathbf{A}, \mathbf{B}) = \cos(\theta) = \frac{\mathbf{A} \cdot \mathbf{B}}{||\mathbf{A}|| \cdot ||\mathbf{B}||}$$
 * **Implementasi**: Fungsi `get_recommendations` mengambil nama produk sebagai input, menemukan vektor TF-IDF-nya, menghitung Cosine Similarity dengan semua produk lain, mengurutkan hasilnya, dan mengembalikan top-N produk paling mirip (tidak termasuk produk itu sendiri).
 * **Contoh Top-5 Rekomendasi (Content-Based) untuk produk 'WHITE HANGING HEART T-LIGHT HOLDER'**:
     ```
