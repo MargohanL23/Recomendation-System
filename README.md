@@ -134,11 +134,11 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 * **Contoh Top-5 Rekomendasi (Collaborative) untuk CustomerID '17850.0'**:
     ```
     Produk Rekomendasi (Description)       Prediksi Interaksi (Quantity)
-    O ROUND SNACK BOXES SET OF 4 FRUITS              109.810578
-    1 JAM MAKING SET WITH JARS                       105.748366
-    2 SET/20 RED RETROSPOT PAPER NAPKINS             105.158300
-    3 REGENCY CAKESTAND 3 TIER                       102.812239
-    4 LUNCH BAG RED RETROSPOT                        102.502932
+    O ROUND SNACK BOXES SET OF 4 FRUITS              809995
+    1 JAM MAKING SET WITH JARS                       809995
+    2 SET/20 RED RETROSPOT PAPER NAPKINS             809995
+    3 REGENCY CAKESTAND 3 TIER                       809995
+    4 LUNCH BAG RED RETROSPOT                        809995
     ```
     Output ini menunjukkan produk-produk yang diprediksi akan memiliki interaksi (Quantity) tertinggi dengan CustomerID 17850.0, berdasarkan pola pembelian dari pengguna lain yang serupa.
 
@@ -158,7 +158,9 @@ Pada bagian ini, kami mengevaluasi performa model Collaborative Filtering (SVD) 
 ### RMSE (Root Mean Squared Error)
 
 RMSE mengukur seberapa dekat prediksi model terhadap nilai sebenarnya dari interaksi (Quantity pembelian). Ini adalah metrik yang umum digunakan untuk masalah regresi.
-RMSE = sqrt( (1/n) * Σᵢ (pᵢ - rᵢ)² )
+
+$$RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^n (p_i - r_i)^2}$$
+
 Dimana:
 * $p_i$ adalah nilai prediksi
 * $r_i$ adalah nilai aktual
@@ -172,7 +174,8 @@ Nilai RMSE ini menunjukkan rata-rata "kesalahan" prediksi model dalam memprediks
 ### Precision@K
 
 Precision@K mengukur proporsi item yang direkomendasikan dalam daftar top-K yang sebenarnya relevan bagi pengguna.
-$$ \text{Precision@K} = \frac{\text{Jumlah item relevan di top-K}}{\text{Jumlah item di top-K}} $$
+
+$$\text{Precision@K} = \frac{\text{Jumlah item relevan di top-K}}{\text{Jumlah item di top-K}}$$
 
 **Hasil Precision@5**:
 Precision@5: 0.8438
@@ -182,7 +185,8 @@ Ini menunjukkan bahwa sekitar 84.38% dari rekomendasi yang diberikan oleh model 
 ### Recall@K
 
 Recall@K mengukur proporsi item relevan yang berhasil ditemukan oleh model dalam daftar top-K rekomendasi dari seluruh item relevan yang ada.
-$$ \text{Recall@K} = \frac{\text{Jumlah item relevan di top-K}}{\text{Jumlah semua item relevan}} $$
+
+$$\text{Recall@K} = \frac{\text{Jumlah item relevan di top-K}}{\text{Jumlah semua item relevan}}$$
 
 **Hasil Recall@5**:
 Recall@5: 0.6295
@@ -192,7 +196,8 @@ Ini mengartikan bahwa model berhasil menemukan sekitar 62.95% dari seluruh item 
 ### F1-score@K
 
 F1-score@K adalah rata-rata harmonis dari Precision@K dan Recall@K. Ini memberikan ukuran keseimbangan antara presisi dan cakupan, yang berguna ketika ada trade-off antara kedua metrik tersebut.
-$$ \text{F1-score@K} = 2 \times \frac{\text{Precision@K} \times \text{Recall@K}}{\text{Precision@K} + \text{Recall@K}} $$
+
+$$\text{F1-score@K} = 2 \times \frac{\text{Precision@K} \times \text{Recall@K}}{\text{Precision@K} + \text{Recall@K}}$$
 
 **Hasil F1-score@5**:
 F1-score@5: 0.7201
