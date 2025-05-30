@@ -1,4 +1,4 @@
-# Laporan Proyek Machine Learning - [Nama Anda]
+# Laporan Proyek Machine Learning - [MARGOHAN L. SIRINGO-RINGO]
 
 ## Project Overview
 
