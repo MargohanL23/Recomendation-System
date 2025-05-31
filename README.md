@@ -45,7 +45,7 @@ Saya akan menggunakan dua pendekatan sistem rekomendasi yang berbeda untuk menga
 
 ## Data Understanding
 
-Dataset yang digunakan adalah Online Retail yang bersumber dari UCI Machine Learning Repository. Dataset ini berisi transaksi e-commerce dari perusahaan retail Inggris antara tahun 2010 dan 2011. Dataset ini memiliki 541.909 baris dan 8 kolom saat dimuat.
+Dataset yang digunakan adalah **Online Retail Dataset** yang tersedia di UCI Machine Learning Repository ([link dataset](https://archive.ics.uci.edu/ml/datasets/Online+Retail)). Dataset ini berisi data transaksi penjualan dari toko e-commerce, meliputi kolom seperti InvoiceNo, StockCode (kode produk), Description (nama produk), Quantity, InvoiceDate, UnitPrice, CustomerID, dan Country. Dataset ini berisi transaksi e-commerce dari perusahaan retail Inggris antara tahun 2010 dan 2011. Dataset ini memiliki 541.909 baris dan 8 kolom saat dimuat.
 
 Berikut adalah ringkasan jumlah missing value pada tiap kolom:
 * `Description`: 1.454 nilai kosong
@@ -71,31 +71,43 @@ Variabel-variabel pada dataset Online Retail adalah sebagai berikut:
 
 Pada tahap ini, data dibersihkan dan ditransformasi untuk memenuhi persyaratan model Content-Based Filtering dan Collaborative Filtering.
 
-Langkah-langkah Data Preparation:
-1.  **Pembersihan Missing Values**:
-    * Baris dengan `CustomerID` dan `Description` yang kosong dihapus.
-    * **Alasan**: `CustomerID` yang kosong berarti kita tidak tahu siapa pelanggan yang melakukan transaksi, sehingga data tersebut tidak dapat digunakan untuk personalisasi rekomendasi. `Description` yang kosong berarti kita tidak memiliki informasi konten tentang produk tersebut.
-2.  **Penanganan Transaksi Tidak Valid**:
-    * Baris dengan `InvoiceNo` yang mengandung 'C' (transaksi dibatalkan) dihapus.
-    * Baris dengan `Quantity <= 0` dan `UnitPrice <= 0` juga dihapus.
-    * **Alasan**: Transaksi yang dibatalkan atau memiliki kuantitas/harga nol/negatif tidak merepresentasikan pembelian yang valid dan dapat bias hasil rekomendasi. Saya hanya ingin menganalisis pembelian yang sebenarnya.
-3.  **Pembuatan Fitur `TotalPrice`**:
-    * Kolom baru `TotalPrice` dibuat dengan mengalikan `Quantity` dan `UnitPrice`.
-    * **Alasan**: `TotalPrice` memberikan gambaran total nilai interaksi pelanggan dengan suatu produk, yang dapat menjadi "rating" yang lebih informatif untuk model Collaborative Filtering dibandingkan hanya `Quantity` saja.
-4.  **Label Encoding**:
-    * `CustomerID` di-encode menjadi `CustomerIdx` (indeks numerik unik).
-    * `Description` di-encode menjadi `ProductIdx` (indeks numerik unik).
-    * **Alasan**: Algoritma machine learning, terutama untuk Collaborative Filtering, membutuhkan input dalam format numerik. Label Encoding menyediakan representasi numerik unik untuk setiap pelanggan dan produk.
-5.  **Transformasi TF-IDF untuk Content-Based Filtering**:
-    * `TfidfVectorizer` diterapkan pada kolom `Description` untuk membuat `tfidf_matrix`.
-    * **Alasan**: TF-IDF mengubah teks deskripsi produk menjadi vektor numerik yang merepresentasikan pentingnya kata-kata dalam deskripsi. Ini memungkinkan perhitungan kemiripan antar produk berdasarkan konten tekstual mereka. Stop words bahasa Inggris dihapus untuk fokus pada kata kunci yang lebih informatif.
-6.  **Pembentukan DataFrame Interaksi untuk Collaborative Filtering**:
-    * Data diagregasi berdasarkan `CustomerIdx` dan `ProductIdx`, dengan menjumlahkan `Quantity` untuk setiap pasangan unik. Ini membentuk `interaction_df`.
-    * **Alasan**: Collaborative Filtering membutuhkan matriks interaksi pengguna-item, di mana setiap entri menunjukkan interaksi (dalam hal ini, total `Quantity` pembelian) antara pengguna dan produk tertentu.
-7.  **Pembagian Data (Train-Test Split)**:
-    * Data interaksi dibagi menjadi trainset (80%) dan testset (20%) menggunakan `surprise.model_selection.train_test_split`.
-    * **Alasan**: Pembagian data ini krusial untuk mengevaluasi performa model secara objektif. Model dilatih pada trainset dan dievaluasi pada testset yang belum pernah dilihat model, mensimulasikan skenario dunia nyata.
+### 1. Pembersihan Missing Values
+- Baris dengan `CustomerID` dan `Description` yang kosong dihapus.
+- **Alasan**: `CustomerID` yang kosong berarti kita tidak tahu siapa pelanggan yang melakukan transaksi, sehingga data tersebut tidak dapat digunakan untuk personalisasi rekomendasi. `Description` yang kosong berarti kita tidak memiliki informasi konten tentang produk tersebut.
 
+### 2. Penanganan Transaksi Tidak Valid
+- Baris dengan `InvoiceNo` yang mengandung 'C' (transaksi dibatalkan) dihapus.
+- Baris dengan `Quantity <= 0` dan `UnitPrice <= 0` juga dihapus.
+- **Alasan**: Transaksi yang dibatalkan atau memiliki kuantitas/harga nol/negatif tidak merepresentasikan pembelian yang valid dan dapat bias hasil rekomendasi. Analisis hanya dilakukan pada transaksi pembelian yang sah.
+
+### 3. Pembuatan Fitur `TotalPrice`
+- Kolom baru `TotalPrice` dibuat dengan rumus:
+
+  ```python
+  df['TotalPrice'] = df['Quantity'] * df['UnitPrice']
+- **Alasan**: TotalPrice memberikan gambaran total nilai interaksi pelanggan dengan suatu produk, yang dapat menjadi 'rating' yang lebih informatif untuk model Collaborative Filtering dibandingkan hanya Quantity saja.
+
+### 4. Label Encoding:
+- CustomerID di-encode menjadi CustomerIdx (indeks numerik unik).
+- Description di-encode menjadi ProductIdx (indeks numerik unik).
+
+- **Alasan**: Algoritma machine learning, terutama untuk Collaborative Filtering, membutuhkan input dalam format numerik. Label Encoding menyediakan representasi numerik unik untuk setiap pelanggan dan produk.
+
+### 5. Transformasi TF-IDF untuk Content-Based Filtering:
+- TfidfVectorizer diterapkan pada kolom Description untuk membuat tfidf_matrix.
+
+- **Alasan**: TF-IDF mengubah teks deskripsi produk menjadi vektor numerik yang merepresentasikan pentingnya kata-kata dalam deskripsi. Ini memungkinkan perhitungan kemiripan antar produk berdasarkan konten tekstual mereka. Stop words bahasa Inggris dihapus untuk fokus pada kata kunci yang lebih informatif.
+
+### 6. Pembentukan DataFrame Interaksi untuk Collaborative Filtering:
+- Data diagregasi berdasarkan CustomerIdx dan ProductIdx, dengan menjumlahkan Quantity untuk setiap pasangan unik. Ini membentuk interaction_df.
+
+- **Alasan**: Collaborative Filtering membutuhkan matriks interaksi pengguna-item, di mana setiap entri menunjukkan interaksi (dalam hal ini, total Quantity pembelian) antara pengguna dan produk tertentu.
+
+### 7. Pembagian Data (Train-Test Split):
+- Data interaksi dibagi menjadi trainset (80%) dan testset (20%) menggunakan train_test_split dari sklearn.model_selection.
+
+- **Alasan**: Pembagian data ini krusial untuk mengevaluasi performa model secara objektif. Model dilatih pada trainset dan dievaluasi pada testset yang belum pernah dilihat model, mensimulasikan skenario dunia nyata.
+  
 ## Modeling
 
 Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menyelesaikan permasalahan, dengan menyajikan contoh top-N recommendation sebagai output.
@@ -134,11 +146,11 @@ Tahapan ini membahas mengenai model sistem rekomendasi yang dibangun untuk menye
 * **Contoh Top-5 Rekomendasi (Collaborative) untuk CustomerID '17850.0'**:
     ```
     Produk Rekomendasi (Description)       Prediksi Interaksi (Quantity)
-    O ROUND SNACK BOXES SET OF 4 FRUITS              809995
-    1 JAM MAKING SET WITH JARS                       809995
-    2 SET/20 RED RETROSPOT PAPER NAPKINS             809995
-    3 REGENCY CAKESTAND 3 TIER                       809995
-    4 LUNCH BAG RED RETROSPOT                        809995
+    O ROUND SNACK BOXES SET OF 4 FRUITS              80995
+    1 JAM MAKING SET WITH JARS                       80995
+    2 SET/20 RED RETROSPOT PAPER NAPKINS             80995
+    3 REGENCY CAKESTAND 3 TIER                       80995
+    4 LUNCH BAG RED RETROSPOT                        80995
     ```
     Output ini menunjukkan produk-produk yang diprediksi akan memiliki interaksi (Quantity) tertinggi dengan CustomerID 17850.0, berdasarkan pola pembelian dari pengguna lain yang serupa.
 
@@ -200,7 +212,7 @@ F1-score@K adalah rata-rata harmonis dari Precision@K dan Recall@K. Ini memberik
 $$\text{F1-score@K} = 2 \times \frac{\text{Precision@K} \times \text{Recall@K}}{\text{Precision@K} + \text{Recall@K}}$$
 
 **Hasil F1-score@5**:
-F1-score@5: 0.7201
+F1-score@5: 0.7210
 
 Nilai ini menunjukkan performa keseluruhan model yang cukup baik, dengan keseimbangan yang baik antara kualitas (presisi) dan kuantitas (cakupan) rekomendasi.
 
